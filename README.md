@@ -1,54 +1,48 @@
-# React + TypeScript + Vite
+# ✅ Pi-Checklist
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Une application de checklist interactive déployée sur Raspberry Pi avec un écran tactile. Elle permet d’ajouter, consulter et valider des tâches en temps réel, via une API Flask et une interface React minimaliste.
 
-Currently, two official plugins are available:
+## 🖥️ Présentation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Pi-Checklist est une solution légère pensée pour tourner sur Raspberry Pi OS Lite, tout en offrant une interface utilisateur accessible sur un petit écran 7 pouces. C’est un outil pratique pour suivre des routines, des procédures, ou des listes de contrôle dans un atelier, un bureau, ou à la maison.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Fonctionnalités
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- 📋 **Liste de tâches** dynamique avec mise à jour immédiate de l'état.
+- ➕ **Ajout de tâches** depuis une interface web.
+- ✅ **Validation instantanée** avec mise à jour côté API et interface.
+- 🔄 **Synchronisation en temps réel** (WebSocket possible pour amélioration future).
+- 🌐 **Déploiement headless** sur Raspberry Pi, avec affichage sur écran local.
+- 🧾 **API REST sécurisée** avec token Bearer simple.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ Stack technique
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- **Frontend** : React + TypeScript + Tailwind CSS
+- **Backend** : Flask (Python) + JSON file as DB
+- **API Auth** : Token Bearer simplifié
+- **Déploiement** : Raspberry Pi OS Lite + `pm2` ou `systemd` pour maintenir l’API
+- **Versioning** : GitHub
+
+---
+
+## 🧱 Structure du projet
+
+```bash
+pi-checklist/
+├── backend/
+│   └── app.py
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── Tasks.tsx
+│   │   ├── api/
+│   │   │   └── api.ts
+│   │   └── App.tsx
+│   └── .env
+├── .gitignore
+└── README.md
 ```
