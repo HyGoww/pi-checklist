@@ -2,6 +2,9 @@ import Mousetrap from 'mousetrap';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
+import io from 'socket.io-client';
+
+const socket = io('http://82.66.132.73:5000');
 
 type TaskData = {
   name: string;
@@ -15,8 +18,7 @@ const AddElement = () => {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [data, setData] = useState<TaskData[]>([]);
-  const token =
-    '3O5a61dtu5JRjcejVaL1MTvv8lFoXtOdAp7iVdxlydvkPwpFVT9lz8b45DHhxH2l';
+  const token = import.meta.env.VITE_TOKEN;
 
   useEffect(() => {
     async function getData() {
@@ -35,6 +37,7 @@ const AddElement = () => {
       }
     }
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit() {
@@ -43,8 +46,8 @@ const AddElement = () => {
         setError('Il faut rentrer au moins 1 mot quand même');
         return;
       }
-      async function getData() {
-        await fetch('http://82.66.132.73:5000/tasks', {
+      async function sendData() {
+        const res = await fetch('http://82.66.132.73:5000/tasks', {
           method: 'POST',
           body: JSON.stringify({ name: label }),
           headers: {
@@ -52,8 +55,10 @@ const AddElement = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        const newData = await res.json();
+        socket.emit('task_added', newData);
       }
-      getData();
+      sendData();
       setSuccess("C'est envoyé !");
       setError('');
       setTimeout(() => {

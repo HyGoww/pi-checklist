@@ -39,6 +39,7 @@ pi-checklist/
 │   ├── src/
 │   │   ├── components/
 │   │   │   └── Tasks.tsx
+│   │   │   └── Meetings.tsx
 │   │   ├── api/
 │   │   │   └── api.ts
 │   │   └── App.tsx

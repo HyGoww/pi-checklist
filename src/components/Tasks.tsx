@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { getTasks, updateTask } from '../api/api';
+import io from 'socket.io-client';
 
 type TaskType = {
   name: string;
   state: boolean;
   id: number;
 };
+
+const socket = io('http://82.66.132.73:5000');
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
@@ -18,6 +21,22 @@ const Tasks = () => {
       .then(setTasks)
       .catch(() => setError('Erreur lors du chargement'))
       .finally(() => setLoading(false));
+
+    const handleTaskAdded = (addedTask: TaskType) => {
+      setTasks((prevTasks) => {
+        const alreadyExists = prevTasks.some(
+          (task) => task.id === addedTask.id
+        );
+        if (alreadyExists) return prevTasks;
+        return [...prevTasks, addedTask];
+      });
+    };
+    socket.on('task_added', handleTaskAdded);
+
+    // Cleanup
+    return () => {
+      socket.off('task_added', handleTaskAdded);
+    };
   }, []);
 
   const handleCheck = async (id: number, name: string) => {
