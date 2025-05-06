@@ -1,0 +1,29 @@
+const API_URL = import.meta.env.VITE_API_URL;
+const token = import.meta.env.VITE_TOKEN;
+
+export const getTasks = async () => {
+  const res = await fetch(API_URL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Erreur lors de la récupération');
+  return res.json();
+};
+
+export const updateTask = async (task: {
+  id: number;
+  name: string;
+  state: boolean;
+}): Promise<void> => {
+  const res = await fetch(`${API_URL}/${task.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(task),
+  });
+  if (!res.ok) throw new Error('Erreur lors de la mise à jour');
+  return res.json();
+};

@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+.font-peach {
+  font-family: "PeachCake", sans-serif;
+}
+
+@font-face {
+  font-family: PeachCake;
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 700;
+  src: url("/src/assets/fonts/PeachCake.otf") format("opentype");
+}
+
+@theme {
+  --color-background: #242423;
+  --color-textlist: #333533;
+  --color-maincolor: #e8eddf;
+  --font-PeachCake: "PeachCake", sans-serif;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
