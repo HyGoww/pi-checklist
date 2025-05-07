@@ -12,6 +12,7 @@ function App() {
       navigate('/AddElement');
     });
   });
+
   return (
     <div>
       <div className="bg-background h-screen w-full flex">
