@@ -1,17 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import AddElement from './pages/AddElement';
-import { PrimeReactProvider } from 'primereact/api';
+import AddElement from './components/AddElement';
 
 function App() {
   return (
     <div>
-      <PrimeReactProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/AddElement" element={<AddElement />} />
-        </Routes>
-      </PrimeReactProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/components/AddElement" element={<AddElement />} />
+      </Routes>
     </div>
   );
 }

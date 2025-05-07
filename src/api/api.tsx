@@ -28,6 +28,22 @@ export const updateTask = async (task: {
   return res.json();
 };
 
+export const addTask = async (task: {
+  name: string;
+  date: string;
+}): Promise<void> => {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(task),
+  });
+  if (!res.ok) throw new Error("Erreur lors de l'ajout");
+  return res.json();
+};
+
 export const deletedTask = async (id: number): Promise<void> => {
   const res = await fetch(`${API_URL}/${id}`, {
     method: 'DELETE',

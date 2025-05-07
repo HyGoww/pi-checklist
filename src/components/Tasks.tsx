@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { deletedTask, getTasks, updateTask } from '../api/api';
+import { Circles } from 'react-loader-spinner';
 import io from 'socket.io-client';
 
 type TaskType = {
@@ -77,13 +78,10 @@ const Tasks = () => {
     socket.emit('task_deleted', { id });
   };
 
-  if (loading) {
-    return <p>Chargement...</p>;
-  }
-
   const handleReload = () => {
     window.location.reload();
   };
+
   return (
     <div className="font-peach w-[50%] mt-16">
       <h1 className="text-maincolor font-bold text-5xl text-center">
@@ -91,46 +89,73 @@ const Tasks = () => {
       </h1>
 
       {/* card */}
-      <div className="mt-12 max-h-[350px] overflow-y-auto pr-2 no-scrollbar">
-        <p className="text-red-600">{error && error}</p>
-        {[...tasks]
-          .sort((a, b) => Number(a.state) - Number(b.state))
-          .map((task) => (
-            <div key={task.id}>
-              {task.state ? (
-                <div className="bg-textlist p-4 mx-6 mt-4 rounded-md justify-between flex">
-                  <p className="text-4xl w-[70%]">{task.name}</p>
-                  <button
-                    className="bg-amber-400 text-white px-4 py-2 rounded-md"
-                    onClick={() => handleDelete(task.id)}
-                  >
-                    Supprimer
-                  </button>
-                </div>
-              ) : (
-                <div className="bg-maincolor p-4 mx-6 mt-4 rounded-md justify-between flex">
-                  <div className="w-[70%]">
-                    <p className="text-4xl text-textlist">{task.name}</p>
-                    <p className="text-zinc-700">
-                      Doit être fait avant :{' '}
-                      {new Date(task.date).toLocaleString('fr-FR', {
-                        dateStyle: 'short',
-                        timeStyle: 'short',
-                      })}
-                    </p>
+      {loading ? (
+        <div>
+          <Circles
+            height="80"
+            width="80"
+            color="#e8eddf"
+            ariaLabel="circles-loading"
+            wrapperStyle={{}}
+            wrapperClass="justify-center mt-12"
+            visible={true}
+          />
+        </div>
+      ) : (
+        <div className="mt-12 max-h-[350px] overflow-y-auto pr-2 no-scrollbar">
+          <p className="text-red-600">{error && error}</p>
+          {[...tasks]
+            .sort((a, b) => Number(a.state) - Number(b.state))
+            .map((task) => (
+              <div key={task.id}>
+                {task.state ? (
+                  <div className="bg-textlist p-4 mx-6 mt-4 rounded-md justify-between flex">
+                    <p className="text-4xl w-[70%]">{task.name}</p>
+                    <button
+                      className="bg-amber-400 text-white px-4 py-2 rounded-md"
+                      onClick={() => handleDelete(task.id)}
+                    >
+                      Supprimer
+                    </button>
                   </div>
-                  <button onClick={() => handleCheck(task.id, task.name)}>
-                    <img
-                      src="../check.png"
-                      alt="logo check"
-                      className="w-8 h-8"
-                    />
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-      </div>
+                ) : (
+                  <div className="bg-maincolor p-4 mx-6 mt-4 rounded-md justify-between flex">
+                    <div className="w-[70%]">
+                      <p className="text-4xl text-textlist">{task.name}</p>
+                      <div>
+                        <p className="text-sm text-gray-500">Échéance :</p>
+                        <div
+                          className={`${
+                            new Date(task.date) < new Date()
+                              ? 'text-red-600'
+                              : new Date(task.date) <
+                                new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+                              ? 'text-orange-600'
+                              : 'text-green-600'
+                          }`}
+                        >
+                          <p>
+                            {new Date(task.date).toLocaleString('fr-FR', {
+                              dateStyle: 'short',
+                              timeStyle: 'short',
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <button onClick={() => handleCheck(task.id, task.name)}>
+                      <img
+                        src="../check.png"
+                        alt="logo check"
+                        className="w-8 h-8"
+                      />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };

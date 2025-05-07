@@ -7,6 +7,7 @@ import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
 
 import io from 'socket.io-client';
+import { addTask, getTasks } from '../api/api';
 
 const socket = io('http://82.66.132.73:5000');
 
@@ -68,29 +69,17 @@ const AddElement = () => {
   const [label, setLabel] = useState('');
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
-  const [data, setData] = useState<TaskType[]>([]);
+  const [tasks, setTasks] = useState<TaskType[]>([]);
   const [date, setDate] = useState<Date | null>(null);
-  const token = import.meta.env.VITE_TOKEN;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function getData() {
-      try {
-        const response = await fetch('http://82.66.132.73:5000/tasks', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setData(data);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    getData();
+    getTasks()
+      .then(setTasks)
+      .catch(() => setError('Erreur lors du chargement'))
+      .finally(() => setLoading(false));
     const handleTaskAdded = (addedTask: TaskType) => {
-      setData((prevTasks) => {
+      setTasks((prevTasks) => {
         const alreadyExists = prevTasks.some(
           (task) => task.id === addedTask.id
         );
@@ -100,11 +89,12 @@ const AddElement = () => {
     };
     socket.on('task_added', handleTaskAdded);
 
+    // Cleanup
     return () => {
       socket.off('task_added', handleTaskAdded);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getTasks, setTasks, setError, setLoading]);
 
   async function handleSubmit() {
     try {
@@ -112,19 +102,8 @@ const AddElement = () => {
         setError('Erreur date ou ajout de mot');
         return;
       }
-      async function sendData() {
-        const res = await fetch('http://82.66.132.73:5000/tasks', {
-          method: 'POST',
-          body: JSON.stringify({ name: label, date }),
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const newData = await res.json();
-        socket.emit('task_added', newData);
-      }
-      sendData();
+      addTask({ name: label, date: date.toString() });
+
       setSuccess("C'est envoyé !");
       setError('');
       setTimeout(() => {
@@ -138,12 +117,21 @@ const AddElement = () => {
     Mousetrap.bind('b a c k', () => {
       navigate('/');
     });
-  });
+
+    return () => {
+      Mousetrap.unbind('b a c k');
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const shake = {
     x: [0, -10, 10, -10, 10, 0],
     transition: { duration: 0.4 },
   };
+
+  if (loading) {
+    return <p>Chargement...</p>;
+  }
   return (
     <div className="bg-background h-screen flex items-center justify-center gap-8">
       {/* Ajout d'élément */}
@@ -200,8 +188,8 @@ const AddElement = () => {
       <div className="bg-maincolor w-1.5 h-[40%] rounded-lg"></div>
       {/* Liste éléments */}
       <div className="font-PeachCake">
-        {data
-          ? data.map((task) => {
+        {tasks
+          ? tasks.map((task) => {
               return (
                 <div key={task.id}>
                   {!task.state && (
